@@ -3,13 +3,17 @@ var router = express.Router();
 var User=require('../lib/User');
 var Career=require('../lib/Career');
 var FB = require('facebook-node');
+var path = require('path'); 
 var mongoose = require('mongoose');
 FB.setApiVersion("v2.2");
-FB.setAccessToken('EAACEdEose0cBAIYzGQI9VtZCFYcJfFOjuWmd24DtAEHZCtCO9ZC7ES5t6SgkBRxDLRljMJO4ZCOaZAfkCMGKp1gvWgzZBl383aR9X7AvLUhLRBiGrtNAh0Yx9eFThUkIYI4jz2KBzb1tDXeLNqwBHOhyMkzu7X7MmxHShneITPnf2dcT7M0xHVFd0ZCvhVigXsZD');
+FB.setAccessToken('EAACEdEose0cBAOqzKRBFIgkEIo23j1ToPnbHZA490YgZBFdIDksa1niZCNwCekNCcLsaRh0yQcshBUQYaNlnTRT5sBhGQB0iULYvxiiHupbz0XXLZCaZAOcnBHt8d7TSAZCiSJn5ID2a0SD4TuFHHxCZANsxemZAd1bYubZAw8OECKD8nfIVFPOJdrv43ye4Oz0cZD');
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+router.get('/', function(req, res, next){
+if(!req.session.user){
+    res.redirect('/login');
+  }
+res.render('welcome');
 });
 router.get('/login',function(req,res){
  res.render('login');
@@ -29,16 +33,23 @@ User.findOne({username: username, password: password},function(err,user){
   }
   else{
   req.session.user=user;
-  res.redirect('/dashboard');
+  res.render('welcome');
   }
 })
 });
-router.get('/dashboard', function(req,res){
-  if(!req.session.user){
-    res.redirect('/login');
-  }
-  res.render('welcome');
-})
+router.get('/logout', function(req, res) {
+      req.session.destroy(function(err) {
+     if(err)
+     {
+       return res.status(500).send();
+     }
+     else{
+	   res.render('login');
+     }
+  })
+        
+});
+
 router.get('/career', function(req, res, next){
 Career.find(function(err, docs){
 	console.log(docs);
@@ -181,8 +192,8 @@ router.post('/career', function(req,res){
       return res.status(500).send();
     }
         var body = 'My first post using facebook-node';
-   FB.api('me/feed', 'post', { message: post}, function (res) {
-  if(!res || res.error) {
+   FB.api('me/feed', 'post', { message: post,link:"http://cesltd.com/Current-Openings"}, function (res) {
+  if(!res || res.error) {com
     console.log(!res ? 'error occurred' : res.error);
     return;
   }
