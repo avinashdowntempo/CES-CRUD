@@ -72,16 +72,32 @@ router.post('/deldata', function(req, res, next){
 		//console.log(docs);
 	}
 });
-/*Career.findById(oid,function(err,docs) {
-	 if (err) {
+});
+router.post('/delmulti', function(req, res, next){
+ console.log(req.body.del);
+ var delid=req.body.del;
+ var delobj=[];
+ console.log("de;" +req.body.del);
+ for(var i=0;i<delid.length;i++){
+ console.log(mongoose.Types.ObjectId(delid[i]));
+ delobj.push(mongoose.Types.ObjectId(delid[i]));
+ }
+  Career.remove({_id: {$in: delobj}}, function (err, docs) {  
+    // We'll create a simple object to send back with a message and the id of the document that was removed
+    // You can really do this however you want, though.
+    	 if (err) {
         res.status(500).send(err);
     }
 	else{
 		res.status(200).send(err);
 		//console.log(docs);
 	}
-})*/
 });
+});
+
+
+
+
 router.post('/careerup', function (req, res) {
   var id=req.body._id;
   var oid = mongoose.Types.ObjectId(id);
@@ -193,7 +209,7 @@ router.post('/career', function(req,res){
     }
         var body = 'My first post using facebook-node';
    FB.api('me/feed', 'post', { message: post,link:"http://cesltd.com/Current-Openings"}, function (res) {
-  if(!res || res.error) {com
+  if(!res || res.error) {
     console.log(!res ? 'error occurred' : res.error);
     return;
   }
